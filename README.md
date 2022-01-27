@@ -8,6 +8,7 @@ Aula 1: Criamos a tela inicial, aprendemos sobre a estrutura do React com Next.j
 Aula 2
 
 Aula 3: Aprendemos um pouco mais sobre o State no React, fizemos o chat funcionar localmente.
+
 https://user-images.githubusercontent.com/56417462/151270163-e43e89f2-dbb2-4257-b1cf-a437ceb1682b.mp4
 
 

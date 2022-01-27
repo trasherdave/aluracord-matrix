@@ -77,6 +77,7 @@ export default function PaginaInicial() {
                                 const valor = event.target.value;
                                 // trocando o valor da variavel atraves do React
                                 setUsername(valor);
+                             
 
                             }}
                             fullWidth
@@ -119,6 +120,7 @@ export default function PaginaInicial() {
                         }}
                     >
                         <Image
+
                             styleSheet={{
                                 borderRadius: '50%',
                                 marginBottom: '16px',

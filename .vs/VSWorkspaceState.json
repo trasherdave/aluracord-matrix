@@ -1,9 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.next",
+    "\\.next\\cache",
+    "\\.next\\cache\\webpack",
     "\\pages"
   ],
-  "SelectedNode": "\\.next",
+  "SelectedNode": "\\pages\\chat.js",
   "PreviewInSolutionExplorer": false
 }

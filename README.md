@@ -30,6 +30,13 @@ Supabase;<br>
 Aba network para debugarmos requests HTTP; e<br>
 useEffect no React.<br>
 
+<hr>
+
+<strong> Aula 5: </strong><br>
+
+Web Sockets; e<br>
+Adicionar os stickers.
+
 https://user-images.githubusercontent.com/56417462/151270163-e43e89f2-dbb2-4257-b1cf-a437ceb1682b.mp4
 
 

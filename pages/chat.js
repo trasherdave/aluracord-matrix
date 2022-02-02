@@ -1,34 +1,80 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyNTYwNSwiZXhwIjoxOTU4OTAxNjA1fQ.paTjft9sRmGMLwKtTAjGxaR4E3MHmwF-HUFzyvc6Xjw';
+const SUPABASE_URL = 'https://qxnynmisrfnjkvkhrhjv.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function escutaMensagensEmTempoReal(adicionaMensagem) {
+    return supabaseClient
+        .from('mensagens')
+        .on('INSERT', (respostaLive) => {
+
+            adicionaMensagem(respostaLive.new);
+
+        })
+        .subscribe();
+}
+
+
 
 export default function ChatPage() {
+
+    // usando o router do next
+    const roteamento = useRouter();
+    // pegando o atributo username definido na URL
+    const usuarioLogado = roteamento.query.username;
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
-    /*
-    // Usuario
-    - Usuario digita no campo textarea
-    - Aperta enter para enviar
-    - Tem que adicionar o texto na listagem
-    
-    // Dev
-    - [X] Campo criado
-    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
-    - [X] Lista de mensagens 
-    */
+
+    React.useEffect(() => {
+        supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+
+                //console.log('Dados da consulta:', data);
+                setListaDeMensagens(data);
+
+            });
+
+        escutaMensagensEmTempoReal((novaMensagem) => {
+            setListaDeMensagens((valorAtualDaLista) => {
+                return [
+                    novaMensagem,
+                    ...valorAtualDaLista,
+                ]
+            });
+        });
+    }, []);
+
 
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.length + 1,
-            de: 'trasherdave',
+            // id: listaDeMensagens.length + 1,
+            de: usuarioLogado,
             texto: novaMensagem,
         };
 
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                // Tem que ser um objeto com os MESMOS CAMPOS que foi definido no supabase
+                mensagem
+            ])
+            .then(({ data }) => {
+
+               // console.log('Criando mensagem: ', data);
+
+           
+            });
+
         setMensagem('');
     }
 
@@ -104,28 +150,47 @@ export default function ChatPage() {
                             }}
 
                         />
-             
+
+                        {/* CallBack */}
+                        <ButtonSendSticker
+                            onStickerClick={(sticker) => {
+
+                                handleNovaMensagem(':sticker: ' + sticker);
+
+                            }}
+
+                        />
+
                         <Button
-                     
+
                             type='submit'
-                            label='Enviar'
+                            label='Ok'
 
                             onClick={(event) => {
 
                                 // mesma instrucao para quando se clicar no Enter
-                                    event.preventDefault();
-                                    handleNovaMensagem(mensagem);
-                                
+                                event.preventDefault();
+                                handleNovaMensagem(mensagem);
+
                             }}
 
                             styleSheet={{
-          
-                                height: '85%',
-                                padding: '6px 8px',
-                                borderRadius: '5px',
-                                marginBottom: '6px',
+                                borderRadius: '50%',
+                                // margin: '5px',
+                                padding: '0 3px 0 0',
+                                minWidth: '50px',
+                                minHeight: '50px',
+                                fontSize: '20px',
+                                marginBottom: '8px',
+                                lineHeight: '0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                hover: {
+                                    filter: 'grayscale(0)',
+                                }
 
-                              
+
                             }}
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -145,7 +210,13 @@ export default function ChatPage() {
 function Header() {
     return (
         <>
-            <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
+            <Box styleSheet={{
+                width: '100%',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }} >
                 <Text variant='heading5'>
                     Chat
                 </Text>
@@ -159,14 +230,15 @@ function Header() {
         </>
     )
 }
-
 function MessageList(props) {
-    console.log(props);
+
+    // console.log(props);
+
     return (
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'hidden',
+                overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -195,13 +267,13 @@ function MessageList(props) {
                         >
                             <Image
                                 styleSheet={{
-                                    width: '25px',
-                                    height: '25px',
+                                    width: '20px',
+                                    height: '20px',
                                     borderRadius: '50%',
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/trasherdave.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong">
                                 {mensagem.de}
@@ -217,11 +289,21 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {mensagem.texto}
+
+                        {mensagem.texto.startsWith(':sticker:')
+                            ? (
+                                <Image src={mensagem.texto.replace(':sticker:', '')}
+
+                                    styleSheet={{
+                                        maxWidth: '30%',
+
+                                    }} />)
+
+                            : (mensagem.texto)}
+
                     </Text>
                 );
             })}
-
         </Box>
     )
 }

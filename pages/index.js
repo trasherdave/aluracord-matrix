@@ -21,12 +21,13 @@ function Titulo(props) {
 
 export default function PaginaInicial() {
     // const username = 'trasherdave';
-    const [username, setUsername] = React.useState('trasherdave');
+    const [username, setUsername] = React.useState('');
     const roteamento = useRouter();
+    const imagemInicial = '../img/neo.png';
 
     return (
         <>
-      
+
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -50,13 +51,23 @@ export default function PaginaInicial() {
                         backgroundColor: appConfig.theme.colors.neutrals[700],
                     }}
                 >
-          
+
                     <Box
                         as="form"
                         onSubmit={function (event) {
                             event.preventDefault();
-                            console.log('Houve submissao');
-                            roteamento.push('/chat')
+
+                            // console.log('Houve submissao');
+
+                            if (username.length < 1) {
+                                alert('preencha o campo!');
+                            } else {
+
+                                roteamento.push(`/chat?username=${username}`);
+
+                            }
+
+                       
 
                         }}
                         styleSheet={{
@@ -71,13 +82,18 @@ export default function PaginaInicial() {
 
 
                         <TextField
+                            placeholder='Digite seu user aqui...'
                             value={username} onChange={function (event) {
-                                console.log('usuario digitou', event.target.value);
+
+                                // console.log('usuario digitou', event.target.value);
+
                                 // onde esta o valor 
                                 const valor = event.target.value;
+
+
                                 // trocando o valor da variavel atraves do React
                                 setUsername(valor);
-                             
+
 
                             }}
                             fullWidth
@@ -103,7 +119,7 @@ export default function PaginaInicial() {
                             }}
                         />
                     </Box>
-                 
+
                     <Box
                         styleSheet={{
                             display: 'flex',
@@ -121,12 +137,18 @@ export default function PaginaInicial() {
                     >
                         <Image
 
+                            onError={function (event) {
+                                event.target.src = imagemInicial
+                            }}
+                            src={username.length > 2 ? `https://github.com/${username}.png` : imagemInicial}
+
+
                             styleSheet={{
                                 borderRadius: '50%',
                                 marginBottom: '16px',
                             }}
-                            src={`https://github.com/${username}.png`}
                         />
+
                         <Text
                             variant="body4"
                             styleSheet={{
@@ -136,10 +158,12 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
+
                             {username}
+
                         </Text>
                     </Box>
-           
+
                 </Box>
             </Box>
         </>

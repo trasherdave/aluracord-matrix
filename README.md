@@ -37,7 +37,12 @@ useEffect no React.<br>
 Web Sockets; e<br>
 Adicionar os stickers.
 
-https://user-images.githubusercontent.com/56417462/151270163-e43e89f2-dbb2-4257-b1cf-a437ceb1682b.mp4
+
+
+
+https://user-images.githubusercontent.com/56417462/152235960-a2f3fb5d-b182-447a-92d0-51b8ff91be9d.mp4
+
+
 
 
 
